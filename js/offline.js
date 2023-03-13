@@ -1,5 +1,5 @@
 (function() {
-  var Offline, checkXHR, defaultOptions, extendNative, grab, handlers, init;
+  var Offline, checkXHR, defaultOptions, extendNative, grab, handlers;
 
   extendNative = function(to, from) {
     var e, key, results, val;
@@ -20,8 +20,6 @@
   };
 
   Offline = {};
-
-  Offline.options = window.Offline ? window.Offline.options || {} : {};
 
   defaultOptions = {
     checks: {
@@ -287,7 +285,8 @@
     }
   };
 
-  init = function() {
+  Offline.init = function(options) {
+    Offline.options = options || {};
     if (Offline.getOption('interceptRequests')) {
       Offline.onXHR(function(arg) {
         var xhr;
@@ -298,12 +297,13 @@
       });
     }
     if (Offline.getOption('checkOnLoad')) {
-      return Offline.check();
+      Offline.check();
+    }
+    if (Offline.reconnect) {
+      return Offline.reconnect.reset();
     }
   };
 
-  setTimeout(init, 0);
-
-  window.Offline = Offline;
+  module.exports = Offline;
 
 }).call(this);

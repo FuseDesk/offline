@@ -1,5 +1,5 @@
-unless window.Offline
-  throw new Error "Offline Reconnect brought in without offline.js"
+
+Offline = require('offline')
 
 rc = Offline.reconnect = {}
 
@@ -39,7 +39,7 @@ down = ->
   reset()
 
   rc.state = 'waiting'
-  
+
   Offline.trigger 'reconnect:started'
   retryIntv = setInterval tick, 1000
 
@@ -59,7 +59,7 @@ nope = ->
 
 rc.tryNow = tryNow
 
-reset()
+Offline.reconnect.reset = reset
 
 Offline.on 'down', down
 Offline.on 'confirmed-down', nope

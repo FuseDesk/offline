@@ -14,7 +14,6 @@ extendNative = (to, from) ->
 
 Offline = {}
 
-Offline.options = if window.Offline then window.Offline.options or {} else {}
 defaultOptions =
   checks:
     xhr:
@@ -240,7 +239,8 @@ Offline.onXHR = (cb) ->
 
     extendNative window.XDomainRequest, _XDomainRequest
 
-init = ->
+Offline.init = (options)->
+  Offline.options = options or {}
   if Offline.getOption 'interceptRequests'
     Offline.onXHR ({xhr}) ->
       unless xhr.offline is false
@@ -248,8 +248,9 @@ init = ->
 
   if Offline.getOption 'checkOnLoad'
     Offline.check()
+  if Offline.reconnect
+    Offline.reconnect.reset()
 
 # We call init in a setTimeout to give time for options to be set
-setTimeout init, 0
 
-window.Offline = Offline
+module.exports = Offline

@@ -1,6 +1,6 @@
 /*! offline-js 0.7.19 */
 (function() {
-  var Offline, checkXHR, defaultOptions, extendNative, grab, handlers, init;
+  var Offline, checkXHR, defaultOptions, extendNative, grab, handlers;
   extendNative = function(to, from) {
     var key, results, val;
     results = [];
@@ -10,8 +10,7 @@
       _error;
     }
     return results;
-  }, Offline = {}, Offline.options = window.Offline ? window.Offline.options || {} :{}, 
-  defaultOptions = {
+  }, Offline = {}, defaultOptions = {
     checks:{
       xhr:{
         url:function() {
@@ -132,16 +131,15 @@
       var req;
       return req = new _XDomainRequest(), monitorXHR(req), req;
     }, extendNative(window.XDomainRequest, _XDomainRequest);
-  }, init = function() {
-    if (Offline.getOption("interceptRequests") && Offline.onXHR(function(arg) {
+  }, Offline.init = function(options) {
+    if (Offline.options = options || {}, Offline.getOption("interceptRequests") && Offline.onXHR(function(arg) {
       var xhr;
       if (xhr = arg.xhr, !1 !== xhr.offline) return checkXHR(xhr, Offline.markUp, Offline.confirmDown);
-    }), Offline.getOption("checkOnLoad")) return Offline.check();
-  }, setTimeout(init, 0), window.Offline = Offline;
+    }), Offline.getOption("checkOnLoad") && Offline.check(), Offline.reconnect) return Offline.reconnect.reset();
+  }, module.exports = Offline;
 }).call(this), function() {
-  var down, next, nope, rc, reset, retryIntv, tick, tryNow, up;
-  if (!window.Offline) throw new Error("Offline Reconnect brought in without offline.js");
-  rc = Offline.reconnect = {}, retryIntv = null, reset = function() {
+  var Offline, down, next, nope, rc, reset, retryIntv, tick, tryNow, up;
+  Offline = require("offline"), rc = Offline.reconnect = {}, retryIntv = null, reset = function() {
     var ref;
     return null != rc.state && "inactive" !== rc.state && Offline.trigger("reconnect:stopped"), 
     rc.state = "inactive", rc.remaining = rc.delay = null != (ref = Offline.getOption("reconnect.initialDelay")) ? ref :3;
@@ -163,8 +161,8 @@
   }, nope = function() {
     if (Offline.getOption("reconnect")) return "connecting" === rc.state ? (Offline.trigger("reconnect:failure"), 
     rc.state = "waiting", next()) :void 0;
-  }, rc.tryNow = tryNow, reset(), Offline.on("down", down), Offline.on("confirmed-down", nope), 
-  Offline.on("up", up);
+  }, rc.tryNow = tryNow, Offline.reconnect.reset = reset, Offline.on("down", down), 
+  Offline.on("confirmed-down", nope), Offline.on("up", up);
 }.call(this), function() {
   var clear, flush, held, holdRequest, makeRequest, waitingOnConfirm;
   if (!window.Offline) throw new Error("Requests module brought in without offline.js");
