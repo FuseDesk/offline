@@ -1,9 +1,7 @@
 (function() {
-  var down, next, nope, rc, reset, retryIntv, tick, tryNow, up;
+  var Offline, down, next, nope, rc, reset, retryIntv, tick, tryNow, up;
 
-  if (!window.Offline) {
-    throw new Error("Offline Reconnect brought in without offline.js");
-  }
+  Offline = require('offline');
 
   rc = Offline.reconnect = {};
 
@@ -74,7 +72,7 @@
 
   rc.tryNow = tryNow;
 
-  reset();
+  Offline.reconnect.reset = reset;
 
   Offline.on('down', down);
 
